@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const path = require('path');
+const appRegistration = require('./appRegistrationHandler');
 
 // Copy the .env.example in the root into a .env file in this folder
 const envFilePath = path.resolve(__dirname, './.env');
@@ -147,5 +148,8 @@ app.post("/webhook", async (req, res) => {
 
   res.sendStatus(200);
 });
+
+//Register app registration handler.
+appRegistration(app);
 
 app.listen(4242, () => console.log(`Node server listening at http://localhost:${4242}/`));
