@@ -37,6 +37,11 @@ app.get("/", (req, res) => {
   res.sendFile(filePath);
 });
 
+app.get("/registration", (req, res) => {
+  const filePath = path.resolve(process.env.STATIC_DIR + "/registrationForm.html");
+  res.sendFile(filePath);
+});
+
 // Fetch the Checkout Session to display the JSON result on the success page
 app.get("/checkout-session", async (req, res) => {
   const { sessionId } = req.query;
