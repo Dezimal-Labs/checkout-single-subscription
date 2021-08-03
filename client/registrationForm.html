@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <title>Sign Up</title>
+
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="Bootstrap/fonts/material-icon/css/material-design-iconic-font.min.css">
+
+    <!-- Main css -->
+    <link rel="stylesheet" href="Bootstrap/css/style.css">
+
+
+</head>
+
+<body>
+
+    <div class="main">
+
+        <div class="container">
+            <div class="booking-content">
+                <div class="booking-image">
+                    <img class="booking-img" src="Bootstrap/images/form-img.jpg" alt="Booking Image">
+                </div>
+                <div class="booking-form">
+                    <form id="booking-form">
+                        <h2>Register!</h2>
+                        <div class="form-group form-input">
+                            <input type="text" name="url" id="txtBitrixInstance" value="" required />
+                            <label for="url" class="form-label">Bitrix24 Instance Url</label>
+                        </div>
+                        <div class="form-group form-input">
+                            <input type="text" name="name" id="txtFirstName" value="" required />
+                            <label for="name" class="form-label">First Name</label>
+                        </div>
+                        <div class="form-group form-input">
+                            <input type="text" name="last" id="txtLastName" value="" required />
+                            <label for="last" class="form-label">Last Name</label>
+                        </div>
+                        <div class="form-group form-input">
+                            <input type="number" name="phone" id="txtMob" value="" required />
+                            <label for="phone" class="form-label">Phone</label>
+                        </div>
+                        <div class="form-group form-input">
+                            <input type="email" name="email" id="txtEmail" value="" required />
+                            <label for="email" class="form-label">Email</label>
+                        </div>
+                        <div class="form-group form-input">
+                            <input type="text" name="url" id="txtCompany" value="" required />
+                            <label for="url" class="form-label">Company Name</label>
+                        </div>
+                        <div class="form-radio">
+                            <label class="label-radio"> Select Your Plan</label>
+                            <div id="radioProducts" class="radio-item-list">
+                                <span class="radio-item radio-default">
+                                    <input type="radio" name="product_plan" value="504" id="product_plan_504"
+                                        data-priceid="" />
+                                    <label for="product_plan_504">Demo</label>
+                                </span>
+                                &nbsp;&nbsp;&nbsp;
+                                <span class="radio-item">
+                                    <input type="radio" name="product_plan" value="506" id="product_plan_506"
+                                        data-priceid="price_1JHoAKHwlwBCS6JGXyBRBLxg" />
+                                    <label for="product_plan_506">Basic</label>
+                                </span>
+                                <br /><br />
+                                <span class="radio-item">
+                                    <input type="radio" name="product_plan" value="508" id="product_plan_508"
+                                        data-priceid="" />
+                                    <label for="product_plan_508">Standard</label>
+                                </span>
+                                &nbsp;&nbsp;&nbsp;
+                                <span class="radio-item">
+                                    <input type="radio" name="product_plan" value="510" id="number_people_510"
+                                        data-priceid="price_1JHoAyHwlwBCS6JGGDLxQ3Mw" />
+                                    <label for="number_people_510">Professional</label>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-submit">
+                            <input onclick="RegisterUser();" id="btnRegister" type="submit" value="Register now"
+                                class="submit" name="submit" />
+                            <!-- <a href="#" class="vertify-booking">Verify your booking info from your phone</a> -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JS -->
+
+    <script>
+        // window.onload = LoadProducts;
+        $('document').ready(function () {
+            //LoadProducts();
+        });
+
+        //Bind product values in dropdown
+        function LoadProducts() {
+            var data = {
+                filter: { "SECTION_ID": 130 },
+                select: ["ID", "NAME", "PRICE", "PROPERTY_254"]
+
+            }
+
+            $.ajax({
+                url: 'https://demo-dezimallabs.bitrix24.in/rest/8/p4spzxdix12iuoos/crm.product.list.json',
+                data: data,
+                success: function (result) {
+                    //console.log(result.result);
+
+                    // $.each(result.result, function (key, value) {
+                    //     var str = "<li value='" + value.ID + "' data-priceId='" + value.PROPERTY_254.value + "'>" + value.NAME + "</li>";
+                    //     $("#food").append(str);
+                    // });
+                    $.each(result.result, function (key, value) {
+                        var str = "<span class='radio-item'><input type='radio' name='number_people' value='" + value.ID + "' data-priceId='" + value.PROPERTY_254.value + "' id='number_people_2_" + key + "' /><label for='number_people_2'>" + value.ID + "</label></span><br/><br/>"
+                        $("#radioProducts").append(str);
+                    });
+
+
+                }
+            });
+        }
+
+
+        // Function Register A user
+        function RegisterUser() {
+            var data = {};
+            data.contact = {};
+            data.company = {};
+            data.deal = {};
+            data.product = {};
+
+            data.deal.url = $.trim($('#txtBitrixInstance').val());
+            data.contact.firstName = $.trim($('#txtFirstName').val());
+            data.contact.lastName = $.trim($('#txtLastName').val());
+            data.contact.mobile = $.trim($('#txtMob').val());
+            data.contact.email = $.trim($('#txtEmail').val());
+            data.company.name = $.trim($('#txtCompany').val());
+            //var rates = $("input[type='radio'][name='product_plan']:checked").val();
+            // var priceid1=  $($.trim("input[type='radio'][name='product_plan']:checked")).attr('data-priceid');
+
+            data.product.id = $("input[name='product_plan']:checked").val();
+            data.product.price_id = $("input[name='product_plan']:checked").attr('data-priceid');
+            $.ajax(
+                {
+                    url: "http://localhost:4242/d24AppRegistration",
+                    data: data,
+                    method: "POST",
+                    success: (res) => {
+                        console.log(res);
+                    }
+                }
+            )
+
+            //alert(objBL.product);
+        }
+
+
+        $("#dropPic").change(function () {
+            alert($(this).find(':selected').data('picone'));
+        });
+    </script>
+    <script src="Bootstrap/vendor/jquery/jquery.min.js"></script>
+    <script src="Bootstrap/js/main.js"></script>
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+
+</html>
