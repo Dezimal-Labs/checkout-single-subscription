@@ -53,7 +53,7 @@ app.get("/checkout-session", async (req, res) => {
 app.post("/create-checkout-session", async (req, res) => {
   const domainURL = process.env.DOMAIN;
   const { priceId } = req.body;
-
+//const priceId ="price_1JHoAyHwlwBCS6JGGDLxQ3Mw";
   // Create new Checkout Session for the order
   // Other optional params include:
   // [billing_address_collection] - to display billing address details on the page
@@ -75,7 +75,8 @@ app.post("/create-checkout-session", async (req, res) => {
       cancel_url: `${domainURL}/canceled.html`,
     });
 
-    return res.redirect(303, session.url);
+  //  return res.redirect(303, session.url);
+  return session.url;
   } catch (e) {
     res.status(400);
     return res.send({

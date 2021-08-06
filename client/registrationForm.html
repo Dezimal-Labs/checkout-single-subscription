@@ -14,7 +14,8 @@
     <!-- Main css -->
     <link rel="stylesheet" href="Bootstrap/css/style.css">
 
-
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="./script.js" defer></script>
 </head>
 
 <body>
@@ -27,31 +28,32 @@
                     <img class="booking-img" src="Bootstrap/images/form-img.jpg" alt="Booking Image">
                 </div>
                 <div class="booking-form">
-                    <form id="booking-form">
+                    <!-- <form action="/d24AppRegistration" method="POST"> -->
+                        <form>
                         <h2>Register!</h2>
                         <div class="form-group form-input">
-                            <input type="text" name="url" id="txtBitrixInstance" value="" required />
-                            <label for="url" class="form-label">Bitrix24 Instance Url</label>
+                            <input type="text" name="Instance" id="txtBitrixInstance" value="" required />
+                            <label for="Instance" class="form-label">Bitrix24 Instance Url</label>
                         </div>
                         <div class="form-group form-input">
-                            <input type="text" name="name" id="txtFirstName" value="" required />
+                            <input type="text" name="Name" id="txtFirstName" value="" required />
                             <label for="name" class="form-label">First Name</label>
                         </div>
                         <div class="form-group form-input">
-                            <input type="text" name="last" id="txtLastName" value="" required />
+                            <input type="text" name="Last" id="txtLastName" value="" required />
                             <label for="last" class="form-label">Last Name</label>
                         </div>
                         <div class="form-group form-input">
-                            <input type="number" name="phone" id="txtMob" value="" required />
+                            <input type="number" name="Phone" id="txtMob" value="" required />
                             <label for="phone" class="form-label">Phone</label>
                         </div>
                         <div class="form-group form-input">
-                            <input type="email" name="email" id="txtEmail" value="" required />
+                            <input type="email" name="Email" id="txtEmail" value="" required />
                             <label for="email" class="form-label">Email</label>
                         </div>
                         <div class="form-group form-input">
-                            <input type="text" name="url" id="txtCompany" value="" required />
-                            <label for="url" class="form-label">Company Name</label>
+                            <input type="text" name="Company" id="txtCompany" value="" required />
+                            <label for="Company" class="form-label">Company Name</label>
                         </div>
                         <div class="form-radio">
                             <label class="label-radio"> Select Your Plan</label>
@@ -82,13 +84,16 @@
                             </div>
                         </div>
                         <div class="form-submit">
-                            <input onclick="RegisterUser();" id="btnRegister" type="submit" value="Register now"
+                            <input onclick="RegisterUser();" id="btnRegister" type="button" value="Register now"
                                 class="submit" name="submit" />
+                                 
                             <!-- <a href="#" class="vertify-booking">Verify your booking info from your phone</a> -->
                         </div>
                     </form>
                 </div>
             </div>
+
+          
         </div>
 
     </div>
@@ -144,17 +149,25 @@
             data.contact.mobile = $.trim($('#txtMob').val());
             data.contact.email = $.trim($('#txtEmail').val());
             data.company.name = $.trim($('#txtCompany').val());
+            
             //var rates = $("input[type='radio'][name='product_plan']:checked").val();
             // var priceid1=  $($.trim("input[type='radio'][name='product_plan']:checked")).attr('data-priceid');
 
             data.product.id = $("input[name='product_plan']:checked").val();
             data.product.price_id = $("input[name='product_plan']:checked").attr('data-priceid');
+            data.priceId=$("input[name='product_plan']:checked").attr('data-priceid');
+
+
+
+            
             $.ajax(
                 {
-                    url: "http://localhost:4242/d24AppRegistration",
+                   url: "http://localhost:4242/d24AppRegistration",
+                  // url: "http://localhost:4242/create-checkout-session",
                     data: data,
                     method: "POST",
                     success: (res) => {
+                        alert(res.result)
                         console.log(res);
                     }
                 }
@@ -162,6 +175,7 @@
 
             //alert(objBL.product);
         }
+
 
 
         $("#dropPic").change(function () {

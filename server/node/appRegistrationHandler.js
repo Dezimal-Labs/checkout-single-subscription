@@ -24,7 +24,7 @@ module.exports = function (app) {
 
                             console.log(res);
                             //redirect to checkout page
-                            checkouctSession(data.product);
+                            checkoutSession(data.product);
 
                         }).catch((exception) => {
                             console.log(exception);
