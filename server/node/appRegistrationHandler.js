@@ -2,11 +2,12 @@ const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
 
+
 module.exports = function (app) {
     console.log('initializing the app registration handler');
    
     //App registration
-    app.post('/d24AppRegistration', (req, res) => {
+    app.post('/d24AppRegistration', (req, d24AppRegResponse) => {
         let data = req.body;
       
         //Start call create contact
@@ -24,7 +25,10 @@ module.exports = function (app) {
 
                             console.log(res);
                             //redirect to checkout page
-                            checkouctSession(data.product);
+                            let stripeSession = checkoutSession(data.product);
+                            d24AppRegResponse.data.stripeSession = stripeSession;
+                            d24AppRegResponse.status = 302;
+                            return d24AppRegResponse;
 
                         }).catch((exception) => {
                             console.log(exception);
@@ -121,11 +125,43 @@ function createContact(contact) {
 
 function checkoutSession({price_id})
 {
-    let url = `${process.env.DOMAIN}/create-checkout-session` ;
-    return axios.post(url,
-    {
-        "priceId": price_id
+    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2020-08-27',
+        appInfo: { // For sample support and debugging, not required for production:
+          name: "stripe-samples/checkout-single-subscription",
+          version: "0.0.1",
+          url: "https://github.com/stripe-samples/checkout-single-subscription"
+        }
+      });
+
+      const domainURL = process.env.DOMAIN;
+      
+
+  // Create new Checkout Session for the order
+  // Other optional params include:
+  // [billing_address_collection] - to display billing address details on the page
+  // [customer] - if you have an existing Stripe Customer ID
+  // [customer_email] - lets you prefill the email input in the form
+  // For full details see https://stripe.com/docs/api/checkout/sessions/create
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: price_id,
+          quantity: 1,
+        },
+      ],
+      // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
+      success_url: `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${domainURL}/canceled.html`,
     });
+
+    return session;
+  } catch (e) {
+     throw e;
+    };
 }
 
 //Returns the webhook url
