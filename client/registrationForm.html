@@ -14,8 +14,7 @@
     <!-- Main css -->
     <link rel="stylesheet" href="Bootstrap/css/style.css">
 
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="./script.js" defer></script>
+   
 </head>
 
 <body>
@@ -135,6 +134,7 @@
         }
 
 
+
         // Function Register A user
         function RegisterUser() {
             var data = {};
@@ -166,21 +166,24 @@
                   // url: "http://localhost:4242/create-checkout-session",
                     data: data,
                     method: "POST",
-                    success: (res) => {
-                        alert(res.result)
-                        console.log(res);
+                    success: function (res) {
+                        if (res) {
+                            alert("Success");
+                            console.log(res);
+                        }
+                        else {
+                            alert("no data");
+                        }
+                    },
+                    error: function (st, error) {
+                        alert("Error "+error)
                     }
                 }
             )
-
-            //alert(objBL.product);
-        }
+        }//
 
 
 
-        $("#dropPic").change(function () {
-            alert($(this).find(':selected').data('picone'));
-        });
     </script>
     <script src="Bootstrap/vendor/jquery/jquery.min.js"></script>
     <script src="Bootstrap/js/main.js"></script>
