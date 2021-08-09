@@ -24,17 +24,20 @@ module.exports = function (app) {
 
                             console.log(res);
                             //redirect to checkout page
-                            checkoutSession(data.product).then((res, err) => {
-                                let ss = res.statusCode;
-                                let s = res.url;
+                            checkoutSession(data.product).then((d24AppRegResponse,err) => {
+                              
                                 if (!err) {
-                                    d24AppRegResponse.send(res);
+                                    console.log("d24AppRegResponse Success");
+                                    d24AppRegResponse.send(d24AppRegResponse);                                                                    
                                 }
                                 else {
                                     d24AppRegResponse.status = 401;
                                     d24AppRegResponse.send(err);
+                                  
                                 }
-                            });
+                            }).catch((exception) => {
+                                console.log(exception);
+                            })//End checkout session
                         }).catch((exception) => {
                             console.log(exception);
                         })//End attach product in deal  

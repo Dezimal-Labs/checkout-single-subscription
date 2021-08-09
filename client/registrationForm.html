@@ -166,17 +166,17 @@
                   // url: "http://localhost:4242/create-checkout-session",
                     data: data,
                     method: "POST",
-                    success: function (res) {
-                        if (res) {
+                    success: function (d24AppRegResponse) {
+                        if (d24AppRegResponse) {
                             alert("Success");
-                            console.log(res);
+                            console.log(d24AppRegResponse);
                         }
                         else {
                             alert("no data");
                         }
                     },
                     error: function (st, error) {
-                        alert("Error "+error);
+                        alert(st+" Error "+error);
                     }
                 }
             )
