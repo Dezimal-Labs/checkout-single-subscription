@@ -4,14 +4,14 @@ const FormData = require('form-data');
 
 module.exports = function (app) {
     console.log('initializing the app registration handler');
-   
+
     //App registration
     app.post('/d24AppRegistration', (req, res) => {
         let data = req.body;
-      
+
         //Start call create contact
         createContact(data.contact).then((respone) => {
-            
+
             const contactID = respone.data.result;
             if (contactID != null || contactID != '') {
                 //Start call create deal
@@ -24,12 +24,21 @@ module.exports = function (app) {
 
                             console.log(res);
                             //redirect to checkout page
-                            checkoutSession(data.product);
-
+                            checkoutSession(data.product).then((res, err) => {
+                                let ss = res.statusCode;
+                                let s = res.url;
+                                if (!err) {
+                                    d24AppRegResponse.send(res);
+                                }
+                                else {
+                                    d24AppRegResponse.status = 401;
+                                    d24AppRegResponse.send(err);
+                                }
+                            });
                         }).catch((exception) => {
                             console.log(exception);
                         })//End attach product in deal  
-                        
+
                     }
                 }).catch((exception) => {
                     console.log(exception);
@@ -55,10 +64,10 @@ function createDeal(deal, contactID) {
                 // "CONTACT_ID":"1",
                 // "CATEGORY_ID": "118",
                 // "UF_CRM_1626237018693": "Instance anand"
-               
+
 
                 "TITLE": "D24ChatBoat_" + contactID,
-                "CONTACT_ID":contactID,
+                "CONTACT_ID": contactID,
                 "CATEGORY_ID": "118",
                 "UF_CRM_1626237018693": deal.url,
                 // "STAGE_ID": "NEW",
@@ -72,10 +81,10 @@ function createDeal(deal, contactID) {
 
 //Start attach product in deal function
 function attachDealProduct(product, dealID) {
-    
+
     let url = getWebhookUrl(process.env.B24_INSTANCE_WEBHOOK_URL, 'crm.deal.productrows.set.json');
 
-    const id=dealID;
+    const id = dealID;
     return axios.post(url,
         {
             id: dealID,
@@ -87,12 +96,12 @@ function attachDealProduct(product, dealID) {
 
 
         // {
-           
+
         //     id: 182, 
         //     rows:
         //     [ 
         //         { "PRODUCT_ID": 510, "PRICE": 100.00, "QUANTITY": 1 }
-               
+
         //     ] 
         // }
     );
@@ -119,13 +128,44 @@ function createContact(contact) {
     );
 }//End create contact function
 
-function checkoutSession({price_id})
-{
-    let url = `${process.env.DOMAIN}/create-checkout-session` ;
-    return axios.post(url,
-    {
-        "priceId": price_id
+async function checkoutSession({ price_id }) {
+    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2020-08-27',
+        appInfo: { // For sample support and debugging, not required for production:
+            name: "stripe-samples/checkout-single-subscription",
+            version: "0.0.1",
+            url: "https://github.com/stripe-samples/checkout-single-subscription"
+        }
     });
+
+    const domainURL = process.env.DOMAIN;
+
+
+    // Create new Checkout Session for the order
+    // Other optional params include:
+    // [billing_address_collection] - to display billing address details on the page
+    // [customer] - if you have an existing Stripe Customer ID
+    // [customer_email] - lets you prefill the email input in the form
+    // For full details see https://stripe.com/docs/api/checkout/sessions/create
+    try {
+        const session = await stripe.checkout.sessions.create({
+            mode: "subscription",
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    price: price_id,
+                    quantity: 1,
+                },
+            ],
+            // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
+            success_url: `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${domainURL}/canceled.html`,
+        });
+
+        return session;
+    } catch (e) {
+        throw e;
+    };
 }
 
 //Returns the webhook url
