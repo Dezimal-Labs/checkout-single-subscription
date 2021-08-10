@@ -168,8 +168,9 @@
                     method: "POST",
                     success: function (d24AppRegResponse) {
                         if (d24AppRegResponse) {
-                            alert("Success");
+                            //alert("Success");
                             console.log(d24AppRegResponse);
+                            window.location.replace(d24AppRegResponse.url);
                         }
                         else {
                             alert("no data");

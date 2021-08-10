@@ -6,7 +6,7 @@ module.exports = function (app) {
     console.log('initializing the app registration handler');
 
     //App registration
-    app.post('/d24AppRegistration', (req, res) => {
+    app.post('/d24AppRegistration', (req, d24AppRegResponse) => {
         let data = req.body;
 
         //Start call create contact
@@ -24,17 +24,13 @@ module.exports = function (app) {
 
                             console.log(res);
                             //redirect to checkout page
-                            checkoutSession(data.product).then((d24AppRegResponse,err) => {
+                            checkoutSession(data.product).then((stripeResponse) => {
                               
-                                if (!err) {
-                                    console.log("d24AppRegResponse Success");
-                                    d24AppRegResponse.send(d24AppRegResponse);                                                                    
-                                }
-                                else {
-                                    d24AppRegResponse.status = 401;
-                                    d24AppRegResponse.send(err);
-                                  
-                                }
+                                console.log("d24AppRegResponse Success");
+                                d24AppRegResponse.send(stripeResponse); 
+                        
+                            }, (err) => {
+                                throw err;
                             }).catch((exception) => {
                                 console.log(exception);
                             })//End checkout session
